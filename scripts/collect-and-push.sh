@@ -40,6 +40,8 @@ mkdir -p "${WORK_DIR}/hosts/wbm-portainer-01/compose/prometheus-stack" \
   "${WORK_DIR}/hosts/wbm-portainer-01/config/homepage" \
   "${WORK_DIR}/hosts/wbm-portainer-02/compose/crafty" \
   "${WORK_DIR}/hosts/wbm-portainer-02/compose/minecraft-paper-test" \
+  "${WORK_DIR}/hosts/wbm-portainer-02/compose/media-apps" \
+  "${WORK_DIR}/hosts/wbm-portainer-02/compose/download-vpn" \
   "${WORK_DIR}/inventory"
 
 scp -q -o BatchMode=yes -o ConnectTimeout=10 \
@@ -67,6 +69,15 @@ scp -q -o BatchMode=yes -o ConnectTimeout=10 \
 scp -q -o BatchMode=yes -o ConnectTimeout=10 \
   mediacontrol@192.168.1.40:/home/mediacontrol/minecraft-paper-test/compose.yaml \
   "${WORK_DIR}/hosts/wbm-portainer-02/compose/minecraft-paper-test/compose.yaml"
+
+# These two Portainer-managed stacks no longer retain their source files on
+# .40. The workspace copy is the reviewed reconstruction from the live host;
+# keep it under version control until the definitions can be exported directly
+# from Portainer and reconciled.
+cp -a /home/cogscontrol/wbm-portainer-02-pvr/compose/media-apps.compose.yml \
+  "${WORK_DIR}/hosts/wbm-portainer-02/compose/media-apps/compose.yml"
+cp -a /home/cogscontrol/wbm-portainer-02-pvr/compose/download-vpn.compose.yml \
+  "${WORK_DIR}/hosts/wbm-portainer-02/compose/download-vpn/compose.yml"
 
 # Runtime inventory contains names, images, Compose source paths, and mount
 # paths only. Environment values are deliberately omitted.

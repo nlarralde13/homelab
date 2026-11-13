@@ -1,0 +1,91 @@
+services:
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: wbm-gluetun-01
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER:-private internet access}
+      VPN_TYPE: ${VPN_TYPE:-openvpn}
+      OPENVPN_USER: ${PIA_OPENVPN_USER:?PIA_OPENVPN_USER must be supplied at runtime}
+      OPENVPN_PASSWORD: ${PIA_OPENVPN_PASSWORD:?PIA_OPENVPN_PASSWORD must be supplied at runtime}
+      SERVER_REGIONS: ${VPN_SERVER_REGIONS:-CA Montreal}
+      VPN_PORT_FORWARDING: ${VPN_PORT_FORWARDING:-on}
+      FIREWALL: on
+      TZ: ${TZ:-America/New_York}
+    ports:
+      - "5010:5010"
+      - "39368:39368/tcp"
+      - "39368:39368/udp"
+      - "8080:8080"
+      - "8112:8112"
+      # Authenticated Gluetun health API for Uptime Kuma
+      - "192.168.1.40:18000:8000"
+      - "8388:8388/tcp"
+      - "8388:8388/udp"
+      - "8888:8888"
+    volumes:
+      - /etc/docker/gluetun:/gluetun
+    healthcheck:
+      test: ["CMD", "/gluetun-entrypoint", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks: [download_vpn]
+
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:latest
+    container_name: wbm-sabnzbd-01
+    restart: unless-stopped
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    network_mode: service:gluetun
+    environment:
+      PUID: ${SABNZBD_PUID:-65534}
+      PGID: ${SABNZBD_PGID:-0}
+      TZ: ${TZ:-America/New_York}
+    volumes:
+      - /etc/docker/sabnzbd:/config
+      - /mnt/storage/media/downloads:/downloads
+      - /mnt/storage/media/incomplete-downloads:/incomplete-downloads
+
+  deluge:
+    image: lscr.io/linuxserver/deluge:latest
+    container_name: wbm-deluge-01
+    restart: unless-stopped
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    network_mode: service:gluetun
+    environment:
+      PUID: ${DELUGE_PUID:-65534}
+      PGID: ${DELUGE_PGID:-0}
+      TZ: ${TZ:-America/New_York}
+      DELUGE_LOGLEVEL: error
+    volumes:
+      - /etc/docker/deluge/config:/config
+      - /mnt/storage/media/downloads:/downloads
+      - /mnt/storage/media/incomplete-downloads:/incomplete-downloads
+
+  mousehole:
+    image: tmmrtn/mousehole:latest
+    container_name: wbm-mousehole-01
+    restart: unless-stopped
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    network_mode: service:gluetun
+    environment:
+      MOUSEHOLE_ALLOWED_HOSTS: ${MOUSEHOLE_ALLOWED_HOSTS:-localhost,127.0.0.1,192.168.1.40}
+      MOUSEHOLE_AUTH_PASSWORD: ${MOUSEHOLE_AUTH_PASSWORD:?MOUSEHOLE_AUTH_PASSWORD must be supplied at runtime}
+      TZ: ${TZ:-America/New_York}
+    volumes:
+      - /etc/docker/mousehole:/var/lib/mousehole
+
+networks:
+  download_vpn:
+    name: wbm-download-vpn

@@ -1,0 +1,105 @@
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: wbm-sonarr-01
+    restart: unless-stopped
+    environment:
+      PGID: ${SONARR_PGID:-0}
+      TZ: ${TZ:-America/New_York}
+      SONARR_BRANCH: main
+      SONARR_CHANNEL: v4-stable
+    ports:
+      - "8989:8989"
+    volumes:
+      - /etc/docker/sonarr:/config
+      - /mnt/storage/media:/data
+      - /mnt/storage/media/downloads:/downloads
+      - /mnt/storage/media/incomplete-downloads:/incomplete-downloads
+      - /mnt/storage/media/tv:/tv
+      - /mnt/storage/media/anime:/anime
+    networks: [media_apps]
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: wbm-radarr-01
+    restart: unless-stopped
+    environment:
+      PUID: ${RADARR_PUID:-65534}
+      PGID: ${RADARR_PGID:-0}
+      TZ: ${TZ:-America/New_York}
+    ports:
+      - "7878:7878"
+    volumes:
+      - /etc/docker/radarr:/config
+      - /mnt/storage/media:/data
+      - /mnt/storage/media/downloads:/downloads
+      - /mnt/storage/media/incomplete-downloads:/incomplete-downloads
+      - /mnt/storage/media/movies:/movies
+    networks: [media_apps]
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: wbm-bazarr-01
+    restart: unless-stopped
+    environment:
+      PUID: ${BAZARR_PUID:-65534}
+      PGID: ${BAZARR_PGID:-0}
+      TZ: ${TZ:-America/New_York}
+    ports:
+      - "6767:6767"
+    volumes:
+      - /etc/docker/bazarr:/config
+      - /mnt/storage/media/downloads:/downloads
+      - /mnt/storage/media/incomplete-downloads:/incomplete-downloads
+      - /mnt/storage/media/movies:/movies
+      - /mnt/storage/media/tv:/tv
+    networks: [media_apps]
+
+  overseerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    container_name: wbm-overseerr-01
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 5055
+      TZ: ${TZ:-America/New_York}
+    ports:
+      - "5055:5055"
+    volumes:
+      - /etc/docker/overseerr:/app/config
+    networks: [media_apps]
+
+  tautulli:
+    image: ghcr.io/tautulli/tautulli:latest
+    container_name: wbm-tautulli-01
+    restart: unless-stopped
+    environment:
+      PGID: ${TAUTULLI_PGID:-1000}
+      TZ: ${TZ:-America/New_York}
+    ports:
+      - "8181:8181"
+    volumes:
+      - /etc/docker/tautulli:/config
+      - /var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Logs:/plexlogs:ro
+    networks: [media_apps]
+
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    container_name: wbm-abs-01
+    restart: unless-stopped
+    environment:
+      PUID: ${ABS_PUID:-65534}
+      PGID: ${ABS_PGID:-0}
+      TZ: ${TZ:-America/New_York}
+    ports:
+      - "13378:80"
+    volumes:
+      - /etc/docker/audiobookshelf:/config
+      - /etc/docker/audiobookshelf/metadata:/metadata
+      - /mnt/storage/media/audiobooks:/audiobooks
+      - /mnt/storage/media/podcasts:/podcasts
+    networks: [media_apps]
+
+networks:
+  media_apps:
+    name: wbm-media-apps
