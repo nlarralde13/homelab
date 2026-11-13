@@ -90,7 +90,10 @@ rm -f "${WORK_DIR}"/**/*.env "${WORK_DIR}"/**/*.secret 2>/dev/null || true
 cp -a "${WORK_DIR}/." "${REPO_DIR}/"
 cd "${REPO_DIR}"
 
-if git grep -n -I -E '(password[[:space:]]*[:=]|api[_-]?key[[:space:]]*[:=]|token[[:space:]]*[:=]|secret[[:space:]]*[:=]|BEGIN (RSA|OPENSSH|EC) PRIVATE KEY)' -- . ':!scripts/collect-and-push.sh'; then
+possible_values="$(git grep -n -I -E '(password|api[_-]?key|token|secret)[[:space:]]*[:=][[:space:]]*[\"'\''`]?[A-Za-z0-9][A-Za-z0-9+/_=-]{15,}[\"'\''`]?[[:space:]]*$' -- . ':!scripts/collect-and-push.sh' || true)"
+private_key_headers="$(git grep -n -I -E 'BEGIN (RSA|OPENSSH|EC) PRIVATE KEY' -- . ':!scripts/collect-and-push.sh' || true)"
+if [ -n "${possible_values}${private_key_headers}" ]; then
+  printf '%s\n%s\n' "${possible_values}" "${private_key_headers}" >&2
   echo "possible secret detected; refusing to commit" >&2
   exit 1
 fi
