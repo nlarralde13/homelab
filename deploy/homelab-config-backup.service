@@ -1,0 +1,11 @@
+[Unit]
+Description=Collect and push homelab Docker configuration
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/cogscontrol/homelab
+ExecStart=/home/cogscontrol/homelab/scripts/collect-and-push.sh
+NoNewPrivileges=true
+PrivateTmp=true

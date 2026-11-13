@@ -1,0 +1,98 @@
+---
+title: Winding Brook Media
+theme: dark
+color: slate
+language: en
+target: _blank
+
+headerStyle: boxed
+hideVersion: true
+showStats: true
+statusStyle: dot
+
+quicklaunch:
+  searchDescriptions: true
+  hideInternetSearch: false
+  showSearchSuggestions: true
+  hideVisitURL: false
+
+background:
+  blur: sm
+  saturate: 50
+  brightness: 50
+  opacity: 40
+
+cardBlur: md
+useEqualHeights: true
+fiveColumns: false
+
+providers:
+  openweathermap: null
+  weatherapi: null
+
+layout:
+  Core Infrastructure:
+    tab: Ops
+    style: row
+    columns: 4
+    icon: mdi-server-network
+
+  Network & Access:
+    tab: Ops
+    style: row
+    columns: 4
+    icon: mdi-lan
+
+  Storage & Backup:
+    tab: Ops
+    style: row
+    columns: 4
+    icon: mdi-nas
+
+  Media Control:
+    tab: Media
+    style: row
+    columns: 4
+    icon: mdi-play-network
+
+  Media Automation:
+    tab: Media
+    style: row
+    columns: 4
+    icon: mdi-robot
+
+  Monitoring:
+    tab: Observability
+    style: row
+    columns: 4
+    icon: mdi-monitor-dashboard
+
+  Logs & Metrics:
+    tab: Observability
+    style: row
+    columns: 4
+    icon: mdi-chart-line
+
+  Development:
+    tab: Dev
+    style: row
+    columns: 4
+    icon: mdi-code-tags
+
+  Internal Apps:
+    tab: Dev
+    style: row
+    columns: 4
+    icon: mdi-application-braces
+
+  Game Servers:
+    tab: Games
+    style: row
+    columns: 4
+    icon: mdi-minecraft
+
+  External Admin:
+    tab: Admin
+    style: row
+    columns: 4
+    icon: mdi-shield-account

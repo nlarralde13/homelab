@@ -1,0 +1,369 @@
+---
+- Core Infrastructure:
+    - Proxmox 1:
+        icon: proxmox.png
+        href: https://192.168.1.4:8006/
+        description: Primary virtualization host
+        siteMonitor: https://192.168.1.4:8006/
+        widget:
+          type: proxmox
+          url: https://192.168.1.4:8006
+          username: "{{HOMEPAGE_VAR_PROXMOX_1_USERNAME}}"
+          password: "{{HOMEPAGE_VAR_PROXMOX_1_PASSWORD}}"
+          fields: ["vms", "lxc", "resources.cpu", "resources.mem"]
+
+    - Proxmox 2:
+        icon: proxmox.png
+        href: https://192.168.1.99:8006/
+        description: Cogsworth development virtualization host
+        siteMonitor: https://192.168.1.99:8006/
+        widget:
+          type: proxmox
+          url: https://192.168.1.99:8006
+          username: "{{HOMEPAGE_VAR_PROXMOX_2_USERNAME}}"
+          password: "{{HOMEPAGE_VAR_PROXMOX_2_PASSWORD}}"
+          fields: ["vms", "lxc", "resources.cpu", "resources.mem"]
+
+    - Portainer 1:
+        icon: portainer.png
+        href: https://192.168.1.30:9443/
+        description: Primary Docker / Portainer host
+        siteMonitor: https://192.168.1.30:9443/
+        widget:
+          type: portainer
+          url: https://192.168.1.30:9443
+          env: 2
+          key: "{{HOMEPAGE_VAR_PORTAINER_1_KEY}}"
+          fields: ["running", "stopped", "total"]
+
+    - Portainer 2:
+        icon: portainer.png
+        href: https://192.168.1.40:9443/
+        description: Media Docker / Portainer host
+        siteMonitor: https://192.168.1.40:9443/
+        widget:
+          type: portainer
+          url: https://192.168.1.40:9443
+          env: 2
+          key: "{{HOMEPAGE_VAR_PORTAINER_2_KEY}}"
+          fields: ["running", "stopped", "total"]
+
+    - Homepage:
+        icon: homepage.png
+        href: http://homepage.lan
+        description: Winding Brook Media operations dashboard
+        siteMonitor: http://homepage.lan
+
+- Network & Access:
+    - Router:
+        icon: mdi-router-network
+        href: http://192.168.1.1
+        description: LAN gateway
+        siteMonitor: http://192.168.1.1
+
+    - UniFi Controller:
+        icon: unifi.png
+        href: https://192.168.1.30:8443/
+        description: Wireless and network controller
+        siteMonitor: https://192.168.1.30:8443/
+
+    - DNS / AdGuard:
+        icon: pi-hole.png
+        href: http://adguard.lan
+        description: Primary DNS, DHCP, and ad blocking on wbm-dns-01
+        siteMonitor: http://192.168.1.5:8080
+
+    - Tailscale Admin:
+        icon: tailscale.png
+        href: https://login.tailscale.com/admin/machines
+        description: Tailnet machines and remote access
+
+    - Reverse Proxy:
+        icon: caddy.png
+        href: http://192.168.1.30
+        description: Caddy reverse proxy host
+        siteMonitor: http://192.168.1.30
+
+- Storage & Backup:
+    - TrueNAS:
+        icon: truenas.png
+        href: http://192.168.1.150/ui/
+        description: Primary NAS and media storage
+        siteMonitor: http://192.168.1.150/ui/
+        widget:
+          type: truenas
+          url: http://192.168.1.150
+          key: "{{HOMEPAGE_VAR_TRUENAS_KEY}}"
+          enablePools: true
+          fields: ["load", "uptime", "alerts"]
+
+    - Backup System:
+        icon: duplicati.png
+        href: "#"
+        description: Placeholder for Duplicati, Kopia, Restic, or Proxmox Backup Server
+
+    - Storage Docs:
+        icon: mdi-file-document
+        href: "#"
+        description: Add NAS layout, NFS mounts, SMB shares, and backup notes
+
+    - NFS Media Mount:
+        icon: mdi-folder-network
+        href: "#"
+        description: Shared media mount from TrueNAS to the media server
+
+- Media Control:
+    - Plex:
+        icon: plex.png
+        href: http://192.168.1.25:32400/web/index.html
+        description: Primary media server on wbm-mediatranscoder-01
+        siteMonitor: http://192.168.1.25:32400
+        widget:
+          type: plex
+          url: http://192.168.1.25:32400
+          key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
+          fields: ["streams", "movies", "tv"]
+
+    - Jellyfin:
+        icon: jellyfin.png
+        href: http://192.168.1.25:8096/
+        description: Jellyfin media server on wbm-mediatranscoder-01
+        siteMonitor: http://192.168.1.25:8096/
+
+    - Tunarr:
+        icon: mdi-television-classic
+        href: http://192.168.1.25:8000/
+        description: Live TV channel and playlist server
+        siteMonitor: http://192.168.1.25:8000/
+
+    - Tdarr:
+        icon: mdi-movie-cog
+        href: http://192.168.1.25:8265/
+        description: Media transcoding and library processing
+        siteMonitor: http://192.168.1.25:8265/
+
+    - Tautulli:
+        icon: tautulli.png
+        href: http://192.168.1.40:8181/
+        description: Plex analytics and stream monitoring
+        siteMonitor: http://192.168.1.40:8181/
+        widget:
+          type: tautulli
+          url: http://192.168.1.40:8181
+          key: "{{HOMEPAGE_VAR_TAUTULLI_KEY}}"
+
+    - Overseerr:
+        icon: overseerr.png
+        href: http://192.168.1.40:5055/
+        description: Media request management
+        siteMonitor: http://192.168.1.40:5055/
+        widget:
+          type: seerr
+          url: http://192.168.1.40:5055
+          key: "{{HOMEPAGE_VAR_SEERR_KEY}}"
+          fields: ["pending", "approved", "completed"]
+
+    - Kometa:
+        icon: mdi-movie-cog
+        href: https://kometa.wiki/
+        description: Plex metadata, collections, overlays, and library automation
+
+- Media Automation:
+    - Sonarr:
+        icon: sonarr.png
+        href: http://192.168.1.40:8989/
+        description: TV automation
+        siteMonitor: http://192.168.1.40:8989/
+        widget:
+          type: sonarr
+          url: http://192.168.1.40:8989
+          key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
+          enableQueue: true
+          fields: ["wanted", "queued", "series"]
+
+    - Radarr:
+        icon: radarr.png
+        href: http://192.168.1.40:7878/
+        description: Movie automation
+        siteMonitor: http://192.168.1.40:7878/
+        widget:
+          type: radarr
+          url: http://192.168.1.40:7878
+          key: "{{HOMEPAGE_VAR_RADARR_KEY}}"
+          enableQueue: true
+          fields: ["wanted", "missing", "queued", "movies"]
+
+    - SABnzbd:
+        icon: sabnzbd.png
+        href: http://192.168.1.40:8080/
+        description: Usenet downloader
+        siteMonitor: http://192.168.1.40:8080/
+        widget:
+          type: sabnzbd
+          url: http://192.168.1.40:8080
+          key: "{{HOMEPAGE_VAR_SABNZBD_KEY}}"
+
+    - qBittorrent:
+        icon: qbittorrent.png
+        href: "#"
+        description: Torrent client placeholder, only add if you actually use it
+
+    - Readarr:
+        icon: readarr.png
+        href: "#"
+        description: Books automation placeholder
+
+    - Lidarr:
+        icon: lidarr.png
+        href: "#"
+        description: Music automation placeholder
+
+- Monitoring:
+    - Uptime Kuma:
+        icon: uptime-kuma.png
+        href: http://192.168.1.30:3001/
+        description: Service uptime checks and alerts
+        siteMonitor: http://192.168.1.30:3001/
+        widget:
+          type: uptimekuma
+          url: http://192.168.1.30:3001
+          slug: wbm
+          fields: ["up", "down", "uptime", "incident"]
+
+    - Grafana:
+        icon: grafana.png
+        href: http://192.168.1.30:3002/
+        description: Metrics dashboards, needs deployment
+        siteMonitor: http://192.168.1.30:3002/
+        widget:
+          type: grafana
+          version: 2
+          url: http://192.168.1.30:3002
+          username: "{{HOMEPAGE_VAR_GRAFANA_USERNAME}}"
+          password: "{{HOMEPAGE_VAR_GRAFANA_PASSWORD}}"
+          fields: ["dashboards", "datasources", "totalalerts", "alertstriggered"]
+
+    - Prometheus:
+        icon: prometheus.png
+        href: http://192.168.1.30:9090/
+        description: Metrics collection, needs deployment
+        siteMonitor: http://192.168.1.30:9090/
+
+    - Healthchecks:
+        icon: healthchecks.png
+        href: "#"
+        description: Dead-man-switch checks for scheduled jobs and backups
+
+- Logs & Metrics:
+    - Dozzle:
+        icon: dozzle.png
+        href: http://192.168.1.30:9999/
+        description: Live Docker container logs, needs deployment
+        siteMonitor: http://192.168.1.30:9999/
+
+    - Loki:
+        icon: grafana-loki.png
+        href: http://192.168.1.30:3100/
+        description: Log aggregation backend, needs deployment
+        siteMonitor: http://192.168.1.30:3100/
+
+    - Watchtower:
+        icon: watchtower.png
+        href: "#"
+        description: Container image update automation; use carefully, not for every stack
+
+    - Docker Host 1:
+        icon: docker.png
+        href: https://192.168.1.30:9443/
+        description: Primary Docker host
+
+    - Docker Host 2:
+        icon: docker.png
+        href: https://192.168.1.40:9443/
+        description: Media Docker host
+
+- Development:
+    - Code Server:
+        icon: code.png
+        href: http://192.168.1.30:8443/
+        description: Browser-based VS Code
+        siteMonitor: http://192.168.1.30:8443/
+
+    - GitHub:
+        icon: github.png
+        href: https://github.com
+        description: Source control
+
+    - Home Lab Docs:
+        icon: mdi-book-open-page-variant
+        href: "#"
+        description: Add docs site, wiki, or Git repo later
+
+    - Internal API Docs:
+        icon: mdi-api
+        href: "#"
+        description: Placeholder for FastAPI / Swagger docs
+
+- Internal Apps:
+    - 513media:
+        icon: mdi-monitor-dashboard
+        href: http://513media.lan
+        description: Internal media control project
+        siteMonitor: http://513media.lan
+
+    - Family Command Station:
+        icon: mdi-home-heart
+        href: "#"
+        description: Family dashboard placeholder
+
+    - WBM Admin:
+        icon: mdi-shield-crown
+        href: "#"
+        description: Future internal admin/control plane
+
+    - Local Landing Page:
+        icon: mdi-web
+        href: http://192.168.1.30
+        description: Current reverse proxy landing page
+
+- Game Servers:
+    - Jacob’s Server:
+        icon: minecraft.png
+        href: "#"
+        description: Minecraft server at 192.168.1.50
+
+    - Winding Brook Home Server:
+        icon: minecraft.png
+        href: "#"
+        description: Minecraft server at 192.168.1.55
+
+    - Minecraft Panel:
+        icon: crafty-controller.png
+        href: "#"
+        description: Add Crafty, Pterodactyl, or AMP if you deploy a game panel
+
+    - Server Notes:
+        icon: mdi-note-text
+        href: "#"
+        description: Add ports, versions, modpacks, backup status, and restart schedule
+
+- External Admin:
+    - Tailscale Machines:
+        icon: tailscale.png
+        href: https://login.tailscale.com/admin/machines
+        description: External admin portal for remote access
+
+    - GitHub:
+        icon: github.png
+        href: https://github.com
+        description: External source control
+
+    - Homepage Docs:
+        icon: homepage.png
+        href: https://gethomepage.dev/
+        description: Homepage configuration documentation
+
+    - Kometa Docs:
+        icon: mdi-movie-cog
+        href: https://kometa.wiki/
+        description: Kometa documentation

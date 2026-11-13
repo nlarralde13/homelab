@@ -1,0 +1,110 @@
+name: cerebro-monitoring
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.15.1
+    container_name: prometheus
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=30d
+      - --web.enable-lifecycle
+    ports:
+      - "192.168.1.30:9090:9090"
+    volumes:
+      - /etc/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - /etc/docker/prometheus/rules:/etc/prometheus/rules:ro
+      - /etc/docker/prometheus/file_sd:/etc/prometheus/file_sd:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      - alertmanager
+    networks:
+      - monitoring
+
+  alertmanager:
+    image: prom/alertmanager:v0.34.1
+    container_name: alertmanager
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    ports:
+      - "192.168.1.30:9093:9093"
+    volumes:
+      - /etc/docker/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - /etc/docker/alertmanager/cerebro-secret:/etc/alertmanager/cerebro-secret:ro
+      - alertmanager_data:/alertmanager
+    networks:
+      - monitoring
+
+  node-exporter:
+    image: prom/node-exporter:v1.12.1
+    container_name: node-exporter
+    restart: unless-stopped
+    command:
+      - --path.rootfs=/host
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+    ports:
+      - "192.168.1.30:9100:9100"
+    volumes:
+      - /:/host:ro,rslave
+    networks:
+      - monitoring
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.55.1
+    container_name: cadvisor
+    restart: unless-stopped
+    command:
+      - --docker_only=true
+      - --housekeeping_interval=30s
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+    networks:
+      - monitoring
+
+  blackbox-exporter:
+    image: prom/blackbox-exporter:v0.29.1
+    container_name: blackbox-exporter
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/blackbox_exporter/blackbox.yml
+    cap_add:
+      - NET_RAW
+    volumes:
+      - /etc/docker/blackbox/blackbox.yml:/etc/blackbox_exporter/blackbox.yml:ro
+      - /etc/docker/blackbox/secrets/gluetun-password:/etc/blackbox_exporter/secrets/gluetun-password:ro
+    networks:
+      - monitoring
+
+  pve-exporter:
+    image: prompve/prometheus-pve-exporter:3.11.0
+    container_name: pve-exporter
+    restart: unless-stopped
+    environment:
+      PVE_USER_FILE: /run/secrets/pve_user
+      PVE_TOKEN_NAME_FILE: /run/secrets/pve_token_name
+      PVE_TOKEN_VALUE_FILE: /run/secrets/pve_token_value
+      PVE_VERIFY_SSL: "false"
+    volumes:
+      - /etc/docker/pve-exporter/pve_user:/run/secrets/pve_user:ro
+      - /etc/docker/pve-exporter/pve_token_name:/run/secrets/pve_token_name:ro
+      - /etc/docker/pve-exporter/pve_token_value:/run/secrets/pve_token_value:ro
+    networks:
+      - monitoring
+
+
+
+volumes:
+  prometheus_data:
+  alertmanager_data:
+
+networks:
+  monitoring:
+    name: cerebro-monitoring

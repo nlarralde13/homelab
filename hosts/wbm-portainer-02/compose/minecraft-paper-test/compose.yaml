@@ -1,0 +1,32 @@
+services:
+  minecraft:
+    image: itzg/minecraft-server:java25
+    container_name: minecraft-paper-test
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    environment:
+      EULA: "TRUE"
+      TYPE: PAPER
+      VERSION: "26.2"
+      PAPER_BUILD: "124"
+      MEMORY: 4G
+      USE_AIKAR_FLAGS: "true"
+      MODE: creative
+      LEVEL: world
+      ONLINE_MODE: "true"
+      ENABLE_RCON: "false"
+      ENABLE_QUERY: "false"
+      ENABLE_STATUS: "true"
+      MOTD: "Minecraft Paper + Geyser test server"
+      TZ: UTC
+      PLUGINS: >-
+        https://download.geysermc.org/v2/projects/geyser/versions/2.11.3/builds/1241/downloads/spigot,
+        https://download.geysermc.org/v2/projects/floodgate/versions/2.2.5/builds/140/downloads/spigot
+    ports:
+      - "25565:25565/tcp"
+      - "19132:19132/udp"
+    volumes:
+      - ./data:/data
+    mem_limit: 6g
+    cpus: 4.0

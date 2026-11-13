@@ -1,0 +1,30 @@
+# Secrets and runtime credentials
+.env
+.env.*
+!.env.example
+*.secret
+*.key
+*.pem
+*.p12
+*.pfx
+credentials*
+secrets/
+
+# Runtime databases, metrics, logs, and generated state
+*.db
+*.sqlite
+*.sqlite3
+*.jsonl
+*.log
+data/
+backups/
+logs/
+prometheus-data/
+uptime-kuma-data/
+
+# Local working files
+.venv/
+__pycache__/
+.DS_Store
+*.swp
+tmp/
