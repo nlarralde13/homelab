@@ -1,4 +1,4 @@
-collected_at=2026-11-13T15:12:45Z
+collected_at=2026-11-13T15:13:06Z
 source_hosts=192.168.1.30,192.168.1.40
 collector=cogs-control-01
 mode=read-only
