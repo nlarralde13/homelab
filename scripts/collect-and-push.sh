@@ -72,13 +72,32 @@ scp -q -o BatchMode=yes -o ConnectTimeout=10 \
 # paths only. Environment values are deliberately omitted.
 ssh -o BatchMode=yes -o ConnectTimeout=15 mediacontrol@192.168.1.30 \
   'docker ps -a --format "{{.Names}}" | while read -r n; do docker inspect "$n" --format "{{.Name}}|{{.Config.Image}}|{{index .Config.Labels \"com.docker.compose.project\"}}|{{index .Config.Labels \"com.docker.compose.project.working_dir\"}}|{{index .Config.Labels \"com.docker.compose.project.config_files\"}}|{{range .Mounts}}{{.Source}} -> {{.Destination}};{{end}}" 2>/dev/null; done | sort' \
-  > "${WORK_DIR}/inventory/wbm-portainer-01.docker-manifest.txt"
+  > "${WORK_DIR}/inventory/wbm-portainer-01.docker-manifest.raw"
 ssh -o BatchMode=yes -o ConnectTimeout=15 mediacontrol@192.168.1.40 \
   'docker ps -a --format "{{.Names}}" | while read -r n; do docker inspect "$n" --format "{{.Name}}|{{.Config.Image}}|{{index .Config.Labels \"com.docker.compose.project\"}}|{{index .Config.Labels \"com.docker.compose.project.working_dir\"}}|{{index .Config.Labels \"com.docker.compose.project.config_files\"}}|{{range .Mounts}}{{.Source}} -> {{.Destination}};{{end}}" 2>/dev/null; done | sort' \
-  > "${WORK_DIR}/inventory/wbm-portainer-02.docker-manifest.txt"
+  > "${WORK_DIR}/inventory/wbm-portainer-02.docker-manifest.raw"
+
+python3 - "${WORK_DIR}/inventory" <<'PY'
+from pathlib import Path
+import sys
+
+root = Path(sys.argv[1])
+for raw in root.glob("*.docker-manifest.raw"):
+    output = raw.with_name(raw.name.replace(".raw", ""))
+    lines = []
+    for line in raw.read_text().splitlines():
+        fields = line.split("|", 5)
+        if len(fields) == 6:
+            mounts = sorted(filter(None, fields[5].split(";")))
+            fields[5] = ";".join(mounts) + (";" if mounts else "")
+            line = "|".join(fields)
+        lines.append(line)
+    output.write_text("\n".join(sorted(lines)) + "\n")
+    raw.unlink()
+PY
 
 cat > "${WORK_DIR}/inventory/collection-manifest.txt" <<EOF
-collected_at=${DATE_UTC}
+collector_version=1
 source_hosts=192.168.1.30,192.168.1.40
 collector=$(hostname -s)
 mode=read-only
