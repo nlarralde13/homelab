@@ -1,0 +1,17 @@
+services:
+  unifi:
+    image: lscr.io/linuxserver/unifi-controller:latest
+    container_name: wbm-unifi-01
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-Etc/UTC}
+    ports:
+      - "10001:10001/udp"
+      - "3478:3478/udp"
+      - "6789:6789/tcp"
+      - "8080:8080/tcp"
+      - "8443:8443/tcp"
+      - "8843:8843/tcp"
+      - "8880:8880/tcp"
+    volumes:
+      - /etc/docker/unifi:/config

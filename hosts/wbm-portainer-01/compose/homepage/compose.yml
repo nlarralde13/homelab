@@ -1,0 +1,27 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: ${HOMEPAGE_ALLOWED_HOSTS:-homepage.lan}
+      HOMEPAGE_VAR_PROXMOX_1_USERNAME: ${HOMEPAGE_VAR_PROXMOX_1_USERNAME:?required at runtime}
+      HOMEPAGE_VAR_PROXMOX_1_PASSWORD: ${HOMEPAGE_VAR_PROXMOX_1_PASSWORD:?required at runtime}
+      HOMEPAGE_VAR_PROXMOX_2_USERNAME: ${HOMEPAGE_VAR_PROXMOX_2_USERNAME:?required at runtime}
+      HOMEPAGE_VAR_PROXMOX_2_PASSWORD: ${HOMEPAGE_VAR_PROXMOX_2_PASSWORD:?required at runtime}
+      HOMEPAGE_VAR_PORTAINER_1_PASSWORD: ${HOMEPAGE_VAR_PORTAINER_1_PASSWORD:?required at runtime}
+      HOMEPAGE_VAR_PORTAINER_2_PASSWORD: ${HOMEPAGE_VAR_PORTAINER_2_PASSWORD:?required at runtime}
+      HOMEPAGE_VAR_TRUENAS_KEY: ${HOMEPAGE_VAR_TRUENAS_KEY:?required at runtime}
+      HOMEPAGE_VAR_PLEX_TOKEN: ${HOMEPAGE_VAR_PLEX_TOKEN:?required at runtime}
+      HOMEPAGE_VAR_TAUTULLI_API_KEY: ${HOMEPAGE_VAR_TAUTULLI_API_KEY:?required at runtime}
+      HOMEPAGE_VAR_SEERR_API_KEY: ${HOMEPAGE_VAR_SEERR_API_KEY:?required at runtime}
+      HOMEPAGE_VAR_SONARR_API_KEY: ${HOMEPAGE_VAR_SONARR_API_KEY:?required at runtime}
+      HOMEPAGE_VAR_RADARR_API_KEY: ${HOMEPAGE_VAR_RADARR_API_KEY:?required at runtime}
+      HOMEPAGE_VAR_BAZARR_API_KEY: ${HOMEPAGE_VAR_BAZARR_API_KEY:?required at runtime}
+      HOMEPAGE_VAR_SABNZBD_API_KEY: ${HOMEPAGE_VAR_SABNZBD_API_KEY:?required at runtime}
+      HOMEPAGE_VAR_PROWLARR_API_KEY: ${HOMEPAGE_VAR_PROWLARR_API_KEY:?required at runtime}
+    volumes:
+      - /etc/docker/homepage/config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock
