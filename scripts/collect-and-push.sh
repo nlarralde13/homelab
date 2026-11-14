@@ -23,9 +23,14 @@ notify() {
   set -u
   [ -n "${CEREBRO_BRIDGE_DISCORD_WEBHOOK_URL:-}" ] || return 0
   payload="$(python3 -c 'import json,sys; print(json.dumps({"content": sys.argv[1]}))' "${message}")"
-  curl -fsS --max-time 10 -H 'Content-Type: application/json' \
+  if curl -fsS --max-time 10 -H 'Content-Type: application/json' \
     -X POST -d "${payload}" "${CEREBRO_BRIDGE_DISCORD_WEBHOOK_URL}" \
-    >/dev/null 2>&1 || true
+    >/dev/null 2>/tmp/homelab-config-backup-discord.err; then
+    echo "Discord backup notification accepted"
+  else
+    rc=$?
+    echo "Discord backup notification failed (curl exit ${rc}): $(tr '\n' ' ' </tmp/homelab-config-backup-discord.err)" >&2
+  fi
 }
 
 failed() {
