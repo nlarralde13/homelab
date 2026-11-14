@@ -138,7 +138,7 @@ git config user.email "${COMMIT_EMAIL}"
 git add --all
 if git diff --cached --quiet; then
   git push origin main
-  notify "✅ Homelab configuration backup completed on $(hostname -s) at ${DATE_UTC}; no configuration changes were detected."
+  echo "Homelab configuration check completed; no changes detected and no Discord notification sent."
   exit 0
 fi
 
